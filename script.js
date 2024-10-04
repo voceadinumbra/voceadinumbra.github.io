@@ -32,13 +32,6 @@ async function main()
 
 let selectedWord = await getRandomWord();
 
-console.log(selectedWord);
-
-
-
-
-
-
 const correctLetters = [];
 const wrongLetters = [];
 
