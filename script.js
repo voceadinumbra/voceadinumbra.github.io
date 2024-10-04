@@ -7,15 +7,43 @@ const finalMessage = document.getElementById('final-message');
 
 const figureParts = document.querySelectorAll('.figure-part');
 
-const words = ['application', 'programming', 'interface', 'wizard'];
 
-let selectedWord = words[Math.floor(Math.random() * words.length)];
+async function getRandomWord() 
+{
+  try {
+    const response = await fetch('https://random-word-api.herokuapp.com/word');
+    if (!response.ok) 
+      {
+      throw new Error('Network response was not ok');
+      }
+    const data = await response.json();
+    const randomWord = data[0]; // Get the first word from the array 
+    return randomWord; // Return the random word
+  } 
+  catch (error) 
+  {
+    console.error('There was a problem with the fetch operation:', error);
+  }
+}
+
+
+async function main() 
+{
+
+let selectedWord = await getRandomWord();
+
+console.log(selectedWord);
+
+
+
+
+
 
 const correctLetters = [];
 const wrongLetters = [];
 
 // Show hidden word
-function displayWord() {
+async function displayWord() {
   wordEl.innerHTML = `
     ${selectedWord
       .split('')
@@ -32,7 +60,9 @@ function displayWord() {
   const innerWord = wordEl.innerText.replace(/\n/g, '');
 
   if (innerWord === selectedWord) {
-    finalMessage.innerText = 'Congratulations! You won! 😃';
+    finalMessage.innerText = `Congratulations! You won! 😃
+    
+    The word was "${selectedWord}"`;
     popup.style.display = 'flex';
   }
 }
@@ -58,7 +88,10 @@ function updateWrongLettersEl() {
 
   // Check if lost
   if (wrongLetters.length === figureParts.length) {
-    finalMessage.innerText = 'Unfortunately you lost. 😕';
+    finalMessage.innerText = `Unfortunately you lost. 😕 
+
+    The word was "${selectedWord}"`;
+
     popup.style.display = 'flex';
   }
 }
@@ -99,12 +132,13 @@ window.addEventListener('keydown', e => {
 });
 
 // Restart game and play again
-playAgainBtn.addEventListener('click', () => {
+playAgainBtn.addEventListener('click', async () => {
   //  Empty arrays
   correctLetters.splice(0);
   wrongLetters.splice(0);
 
-  selectedWord = words[Math.floor(Math.random() * words.length)];
+ 
+  selectedWord = await getRandomWord();
 
   displayWord();
 
@@ -114,3 +148,7 @@ playAgainBtn.addEventListener('click', () => {
 });
 
 displayWord();
+
+}
+
+main();
